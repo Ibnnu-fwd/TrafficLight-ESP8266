@@ -86,11 +86,17 @@ OnMqttEventMessage(char *topic, char *payload,
 		   AsyncMqttClientMessageProperties properties, size_t len,
 		   size_t index, size_t total)
 {
+	/// early return if payload is null
+	if (payload == nullptr)
+		return;
+
+	char tempbuf[64];
+    memcpy(tempbuf, payload, len);
 	/// compare each topics
 	if (0 == strcmp(topic, TOPIC_COUNT_OF_CAR)) {
 		/// parse string payload into unsigned integer
 		// check if ppayload greater than 5
-		auto isgreather = (atoi(payload) > 5);
+		auto isgreather = (atoi(tempbuf) > 5);
 		// check if currentState is only on state green
 		auto isgreen = (currentState == StateType::GREEN);
 		/// and check all the condition
@@ -106,6 +112,7 @@ OnMqttEventMessage(char *topic, char *payload,
 	PRINTF("\tpaylodd : %s\r\n", payload);
 	PRINTF("\tqos     : %u\r\n", properties.qos);
 	PRINTF("\tretain  : %s\r\n", BOOLSTR(properties.qos));
+	PRINTF("\tlen     : %zu\r\n", len);
 	PRINTF("\tindex   : %zu\r\n", index);
 	PRINTF("\ttotal   : %zu\r\n", total);
 }
